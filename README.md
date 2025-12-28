@@ -22,8 +22,6 @@ I identified false runs from SkillCorner's dynamic events data by filtering for 
 - Runners did not receive the ball within 5 seconds (50 frames) after the run
 - Certain off-ball run types: 'behind', 'run_ahead_of_the_ball', etc
 
-Additionally, these events were incorporated into the tracking dataset.
-
 **Expected Possession Value Model (EPV)**
 
 To quantify the false run, I developed an EPV model using XGBoost that predicts the probability of a shot occurring within the next 10 seconds (100 frames) based on the current game state. EPV looks at the entire state of the game using tracking and event data. The model uses 4 features derived from tracking data at each frame: 

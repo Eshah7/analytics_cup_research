@@ -23,6 +23,7 @@ I identified potential candidate false runs from SkillCorner's dynamic events da
 - Identified as an off-ball run 
 - Runners did not receive the ball (player_posession or on_ball_engagement events) within 5 seconds (50 frames) following the run
 - Certain off-ball run types: 'behind', 'run_ahead_of_the_ball', 'cross_receiver', 'pulling_wide', 'pulling_half_space', 'overlap', 'underlap'
+- Players' avg band speed was not null
 
 These filters ensured that these were genuine decoy movements rather than attempts to receive the ball. Additionally, these events were incorporated with the tracking dataset at both start(frame_start) and end (frame_end) timestamps. I excluded any runs with missing positional data to avoid any modelling issues. 
 
@@ -30,8 +31,8 @@ These filters ensured that these were genuine decoy movements rather than attemp
 
 To quantify the increase in attacking threat, I developed an EPV model using XGBoost that predicts the probability of a shot occurring within the next 10 seconds (100 frames) based on the current game state. The model uses 4 features derived from tracking data at each frame: 
 
-- *Distance to Goal*: The Euclidean distance from ball position to the center of the opposing goal, $$\sqrt{(goal_x - ball_x)^2 + (goal_y)^2}$$.
-- 
+- Distance to Goal: The Euclidean distance from ball position to the center of the opposing goal, $$\sqrt{(goal_x - ball_x)^2 + (goal_y)^2}$$
+- Angle to Goal: The angle between the ball and the goal centerline,  $$\atan{(0 - ball_y, goal_x - ball_x)}$$
 
 #### Results
 

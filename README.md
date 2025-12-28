@@ -1,7 +1,6 @@
 # SkillCorner X PySport Analytics Cup - Research Track
 **Submission By:** Esha Shah
 
-This repository contains the submission template for the SkillCorner X PySport Analytics Cup **Research Track**. 
 ---
 
 ## Research Track Abstract(max. 500 words)

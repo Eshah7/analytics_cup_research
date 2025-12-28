@@ -15,18 +15,18 @@ This research introduces a framework for detecting false runs and quantifying th
 #### Methods
 **False Run Detection**
 
-I identified potential candidate false runs from SkillCorner's dynamic events data by filtering for events with the following conditions: 
+I identified false runs from SkillCorner's dynamic events data by filtering for events with the following conditions: 
 
 - Events started and ended in the attacking third
 - Identified as an off-ball run 
-- Runners did not receive the ball (player_posession or on_ball_engagement events) within 5 seconds (50 frames) following the run
-- Certain off-ball run types: 'behind', 'run_ahead_of_the_ball', 'cross_receiver', 'pulling_wide', etc
+- Runners did not receive the ball within 5 seconds (50 frames) after the run
+- Certain off-ball run types: 'behind', 'run_ahead_of_the_ball', etc
 
-Additionally, these events were incorporated with the tracking dataset at both frame start and frame end timestamps. 
+Additionally, these events were incorporated into the tracking dataset.
 
 **Expected Possession Value Model (EPV)**
 
-To quantify the increase in attacking threat, I developed an EPV model using XGBoost that predicts the probability of a shot occurring within the next 10 seconds (100 frames) based on the current game state. EPV is designed to look at the entire state of the game using on-ball and off-ball movements. The model uses 4 features derived from tracking data at each frame: 
+To quantify the false run, I developed an EPV model using XGBoost that predicts the probability of a shot occurring within the next 10 seconds (100 frames) based on the current game state. EPV looks at the entire state of the game using tracking and event data. The model uses 4 features derived from tracking data at each frame: 
 
 - Distance to Goal: The Euclidean distance from ball position to the center of the opposing goal, $$\sqrt{(goal_x - ball_x)^2 + (goal_y)^2}$$
 - Angle to Goal: The angle between the ball and the goal centerline,  computed using atan2(0 − ball_y, goal_x − ball_x)
@@ -39,9 +39,9 @@ I labelled positive events as any frame occurring within 100 frames before a sho
 
 The "Counterfactual" state was creating "ghost" game states that represent what would have occurred without a false run. For each identified false run, the opponent closest to the runner at frame_start was determined, assuming they are most likely tracking the runner.  
 
-Next, I created a "hybrid scenario" where the false run never happened, but the rest of the play progressed normally by resetting both the runner and the closest defender's positions. To represent an alternate reality where the closest defender maintained their original marking assignment. 
+Next, I created a "hybrid scenario" where the false run never happened, but the rest of the play progressed normally by resetting both the runner and the closest defender's positions. 
 
-Thereafter, I calculate the false run impact by comparing the EVP between the actual and the counterfactual scenarios. I computed the `EPV lift = acutal_epv - ghost_epv`. 
+Thereafter, I calculate the false run impact by comparing the EVP between the actual and the counterfactual scenarios: `EPV lift = acutal_epv - ghost_epv`. 
 
 A positive lift indicates the false run is increasing the team's probability of generating a shot.
 

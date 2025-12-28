@@ -6,9 +6,26 @@ Please review the `submission.ipynb` file for the full code. An online static ve
 ---
 
 ## Research Track Abstract(max. 500 words)
+### Quantifying the Unseen: Valuing False Runs with Expected Possession Value (EPV)
 #### Introduction
+Most popular analytics focus on possession and on-ball actions; the impact demonstrated through false runs (decoy movements to break defensive structures without receiving the ball) is undervalued and unmeasured. The challenge is to isolate the effect of a false run on the overall team success. A false run is difficult to identify in event data, yet it creates space by pulling defenders out of position, enabling teammates to exploit the resulting gap or incorrect marking. 
+
+This research introduces a framework for detecting false runs and quantifying their impact using causal inference techniques applied to SkillCorner's tracking and dynamic event data. What would have happened if the false run never happened? We will compare the actual game states against "ghost" scenarios where runners stayed in their original positions, to measure the value added by off-ball movements. 
 
 #### Methods
+The method of identifying and quantifying false runs consists of 3 parts: detecting false runs, developing an Expected Possession Value (EPV) model using tracking data, and calculating the lift between actual game states and "ghost" scenarios.
+
+**False Run Detection**
+We identified potential candidate false runs from SkillCorner's dynamic events data by filtering for events with the following conditions: 
+
+- Events started and ended in the attacking third
+- Identified as an off-ball run 
+- Runners did not receive the ball (player_posession or on_ball_engagement events) within 5 seconds (50 frames) following the run
+- Certain off-ball run types: 'behind', 'run_ahead_of_the_ball', 'cross_receiver', 'pulling_wide', 'pulling_half_space', 'overlap', 'underlap'
+
+These filters ensured that these were genuine decoy movements rather than attempts to receive the ball. Additionally, these events were incorporated with the tracking dataset at both start(frame_start) and end (frame_end) timestamps. We excluded any runs with missing positional data to avoid any modelling issues. 
+
+**False Run Detection**
 
 #### Results
 

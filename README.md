@@ -8,13 +8,11 @@ Please review the `submission.ipynb` file for the full code. An online static ve
 ## Research Track Abstract(max. 500 words)
 ### Quantifying the Unseen: Valuing False Runs with Expected Possession Value (EPV)
 #### Introduction
-Most popular analytics focus on possession and on-ball actions; the impact demonstrated through false runs (decoy movements to break defensive structures without receiving the ball) is undervalued and unmeasured. The challenge is to isolate the effect of a false run on the overall team success. 
+Most popular analytics focus on ball actions; the impact demonstrated through false runs (decoy movements to break defensive structures without receiving the ball) is undervalued and unmeasured. The challenge is to isolate the effect of a false run on the overall team success. 
 
 This research introduces a framework for detecting false runs and quantifying their impact using causal inference techniques applied to SkillCorner's tracking and dynamic event data. What would have happened if the false run never happened? I will compare the actual game states against "ghost" scenarios where runners stayed in their original positions, to measure the value added by off-ball movements. 
 
 #### Methods
-The method of identifying and quantifying false runs consists of 3 parts: detecting false runs, developing an Expected Possession Value (EPV) model using tracking data, and calculating the lift between actual game states and "ghost" scenarios.
-
 **False Run Detection**
 
 I identified potential candidate false runs from SkillCorner's dynamic events data by filtering for events with the following conditions: 
@@ -22,10 +20,9 @@ I identified potential candidate false runs from SkillCorner's dynamic events da
 - Events started and ended in the attacking third
 - Identified as an off-ball run 
 - Runners did not receive the ball (player_posession or on_ball_engagement events) within 5 seconds (50 frames) following the run
-- Certain off-ball run types: 'behind', 'run_ahead_of_the_ball', 'cross_receiver', 'pulling_wide', 'pulling_half_space', 'overlap', 'underlap'
-- Players' avg band speed was not null
+- Certain off-ball run types: 'behind', 'run_ahead_of_the_ball', 'cross_receiver', 'pulling_wide', etc
 
-These filters ensured that these were genuine decoy movements rather than attempts to receive the ball. Additionally, these events were incorporated with the tracking dataset at both start(frame_start) and end (frame_end) timestamps. 
+Additionally, these events were incorporated with the tracking dataset at both frame start and frame end timestamps. 
 
 **Expected Possession Value Model (EPV)**
 
@@ -36,21 +33,30 @@ To quantify the increase in attacking threat, I developed an EPV model using XGB
 - Packing Rate: The # of defenders positioned behind the ball
 - Pressure Distance: The distance from the ball to the nearest defending player
 
-I labelled positive events as any frame occurring within 100 frames before a shot event, creating a binary classification task. I utilized shots instead of goals due to the large class imbalance. The XGBoost classifier provided a probability score representing the offensive threat level for any given frame. 
+I labelled positive events as any frame occurring within 100 frames before a shot event, creating a binary classification task. The XGBoost classifier provided a probability score representing the offensive threat level for any given frame. 
 
 **Counterfactual Lift Calculation**
+
 The "Counterfactual" state was creating "ghost" game states that represent what would have occurred without a false run. For each identified false run, the opponent closest to the runner at frame_start was determined, assuming they are most likely tracking the runner.  
 
-Next, I created a "hybrid scenario" where the false run never happened, but the rest of the play progressed normally by resetting both the runner and the closest defender's positions. The goal is to represent an alternate reality where the runner stayed in position, and the closest defender maintained their original marking assignment. 
+Next, I created a "hybrid scenario" where the false run never happened, but the rest of the play progressed normally by resetting both the runner and the closest defender's positions. To represent an alternate reality where the closest defender maintained their original marking assignment. 
 
 Thereafter, I calculate the false run impact by comparing the EVP between the actual and the counterfactual scenarios. I computed the `EPV lift = acutal_epv - ghost_epv`. 
 
-A positive lift indicates the false increased the team's probability of generating a shot, in percentage points terms. I validated the approach by ensuring all lifts were calculated on complete data and visually inspecting the high-impact runs using animated tracking data visualizations. 
+A positive lift indicates the false run is increasing the team's probability of generating a shot.
 
 #### Results
+![Top 10 False Runs](Figure_1_Top_10_False_Runs.png)
 
+The top 10 false runs that were identified by EPV.
 
 #### Conclusion
+
+![False Run Example](Figure_2_False_Run_Example.gif)
+
+The false runner drags the defender into space away from the play. The blue team is effectively able to pass and make a shot. 
+
+This metric can be turned into an open-source package to easily calculate the lift and impact of a false run using tracking data. 
 
 ---
 ## More Information

@@ -46,8 +46,6 @@ A positive lift indicates the false run is increasing the team's probability of 
 #### Results
 ![Top 10 False Runs](Figure_1_Top_10_False_Runs.png)
 
-The top 10 false runs that were identified by EPV.
-
 #### Conclusion
 
 ![False Run Example](Figure_2_False_Run_Example.gif)
